@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Design Weekly Report</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  body { background: #faf9f5; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; color: #141414; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 34px 28px 60px; }
+  .toolbar { display: flex; align-items: center; gap: 10px; margin-bottom: 26px; }
+  .toolbar a.back { font-size: 13.5px; font-weight: 600; color: #8f8f8f; text-decoration: none; padding: 8px 10px; border-radius: 9px; }
+  .toolbar a.back:hover { color: #141414; background: #f1efeb; }
+  .wkbtn { border: 0; background: #ffffff; box-shadow: 0 1px 3px rgba(0,0,0,0.09); color: #636363; width: 32px; height: 32px; border-radius: 9px; font-size: 15px; cursor: pointer; }
+  .wkbtn:hover { color: #141414; }
+  .wkbtn[disabled] { opacity: 0.35; cursor: default; }
+  .pdf { border: 0; background: #fc6900; color: #ffffff; font-family: inherit; font-size: 14px; font-weight: 600; cursor: pointer; padding: 10px 18px; border-radius: 10px; }
+  .pdf:hover { background: #e35f00; }
+  .sheet { background: #ffffff; border-radius: 18px; box-shadow: 0 1px 3px rgba(0,0,0,0.07), 0 12px 32px rgba(0,0,0,0.08); padding: 44px 48px; }
+  .rhead { display: flex; align-items: flex-start; justify-content: space-between; gap: 20px; padding-bottom: 22px; border-bottom: 2px solid #141414; }
+  .rhead h1 { font-size: 26px; letter-spacing: -0.02em; line-height: 1.15; }
+  .rhead .sub { font-size: 13.5px; color: #8f8f8f; margin-top: 7px; }
+  .rhead .mark { display: flex; align-items: center; gap: 9px; font-size: 13px; font-weight: 700; color: #141414; white-space: nowrap; padding-top: 4px; }
+  .mark .dot { width: 10px; height: 10px; border-radius: 3px; background: #fc6900; }
+  h2 { font-size: 13px; text-transform: uppercase; letter-spacing: 0.08em; color: #8f8f8f; margin: 34px 0 14px; }
+  .kpis { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+  .kpi { background: #faf8f5; border-radius: 13px; padding: 15px 16px; }
+  .kpi .v { font-size: 27px; font-weight: 700; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; line-height: 1.1; }
+  .kpi .l { font-size: 12px; color: #8f8f8f; margin-top: 5px; }
+  .kpi .d { font-size: 11.5px; font-weight: 600; margin-top: 3px; }
+  .up { color: #3f9c6b; } .down { color: #c94f38; } .flat { color: #bebebe; }
+  table { width: 100%; border-collapse: collapse; }
+  td, th { text-align: left; font-size: 13.5px; padding: 9px 10px 9px 0; border-bottom: 1px solid #f4f2ef; vertical-align: top; }
+  th { font-size: 11.5px; text-transform: uppercase; letter-spacing: 0.06em; color: #bebebe; font-weight: 600; }
+  td.num, th.num { text-align: right; padding-right: 0; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .tag { display: inline-block; font-size: 10.5px; font-weight: 700; padding: 2px 8px; border-radius: 999px; background: #f1efeb; color: #8f8f8f; margin-left: 8px; vertical-align: 1px; }
+  .tag.p0 { background: #fc6900; color: #fff; } .tag.p1 { background: rgba(252,105,0,0.16); color: #a33c00; }
+  .bar-row { display: grid; grid-template-columns: 200px 1fr 74px; gap: 14px; align-items: center; padding: 8px 0; border-bottom: 1px solid #f4f2ef; }
+  .bar-row .t { font-size: 13.5px; color: #363636; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .track { height: 9px; border-radius: 999px; background: #efece7; overflow: hidden; }
+  .fill { height: 100%; border-radius: 999px; background: #d9cebf; }
+  .fill.hot { background: #fc6900; }
+  .bar-row .pc { font-size: 12.5px; font-weight: 700; color: #636363; text-align: right; font-variant-numeric: tabular-nums; }
+  .trend { display: flex; align-items: flex-end; gap: 10px; height: 130px; padding: 6px 2px 0; }
+  .tcol { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 7px; height: 100%; justify-content: flex-end; }
+  .tbar { width: 100%; max-width: 46px; border-radius: 7px 7px 3px 3px; background: #e7e1d8; }
+  .tbar.now { background: #fc6900; }
+  .tcol .tv { font-size: 12px; font-weight: 700; font-variant-numeric: tabular-nums; color: #636363; }
+  .tcol .tl { font-size: 10.5px; color: #bebebe; white-space: nowrap; }
+  .foot { display: flex; justify-content: space-between; font-size: 11.5px; color: #bebebe; margin-top: 40px; padding-top: 14px; border-top: 1px solid #f4f2ef; }
+  .empty { font-size: 13px; color: #bebebe; padding: 10px 0; }
+  /* login gate */
+  #gate { position: fixed; inset: 0; background: #faf9f5; display: flex; align-items: center; justify-content: center; z-index: 50; }
+  #gate .box { width: 320px; display: flex; flex-direction: column; gap: 13px; }
+  #gate input { width: 100%; border: 1px solid #e5e2de; border-radius: 12px; padding: 12px 14px; font-family: inherit; font-size: 15px; outline-color: #fc6900; }
+  #gate button { border: 0; background: #1b1b1b; color: #fff; font-family: inherit; font-size: 15px; font-weight: 600; cursor: pointer; padding: 13px; border-radius: 12px; }
+  @media print {
+    body { background: #ffffff; }
+    .wrap { max-width: none; padding: 0; }
+    .toolbar, #gate { display: none !important; }
+    .sheet { box-shadow: none; border-radius: 0; padding: 0; }
+    h2 { break-after: avoid; }
+    tr, .bar-row, .tcol { break-inside: avoid; }
+  }
+  @page { size: A4; margin: 16mm 15mm; }
+</style>
+</head>
+<body>
+<div id="gate" style="display:none">
+  <div class="box">
+    <div style="font-size:22px;font-weight:700;letter-spacing:-0.015em">Weekly report</div>
+    <div style="font-size:13.5px;color:#8f8f8f">Enter the team password to continue.</div>
+    <input id="gate-pw" type="password" placeholder="Team password">
+    <div id="gate-err" style="display:none;font-size:13px;color:#ef4444">Wrong password. Try again.</div>
+    <button id="gate-go">Enter</button>
+  </div>
+</div>
+
+<div class="wrap">
+  <div class="toolbar">
+    <a class="back" href="index.html">&larr; Board</a>
+    <span style="flex:1"></span>
+    <button class="wkbtn" id="wk-prev" title="Previous week">&larr;</button>
+    <button class="wkbtn" id="wk-next" title="Next week">&rarr;</button>
+    <button class="pdf" id="pdf">Download PDF</button>
+  </div>
+  <div class="sheet" id="sheet"><div class="empty">Loading…</div></div>
+</div>
+
+<script>
+(function () {
+  var SUPA = "https://tldnpcimsvqftzooeoww.supabase.co";
+  var KEY = "sb_publishable_-yq8A4Sh0agE999P-fuW7A_ozvZMJuh";
+  var PW_MEMBER = "design2026", PW_EDITOR = "design2026edit";
+  var MONTH = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+  var COLS = { backlog: "Backlog", progress: "In progress", review: "In review", done: "Done" };
+  var SIDE = ["sz_","ds_","ti_","wl_","lk_","ts_","wk_","pg_","cm_","rt_"];
+  var role = null, offset = 0, DATA = null;
+
+  // ---- auth (same convention as the board) ----
+  var isLocal = location.hostname === "localhost" || location.hostname === "127.0.0.1";
+  if (isLocal) role = "editor";
+  else {
+    try {
+      if (sessionStorage.getItem("oxolo-authed") === "1") role = sessionStorage.getItem("oxolo-role") || "member";
+    } catch (e) {}
+  }
+  function gate() {
+    document.getElementById("gate").style.display = "flex";
+    var pw = document.getElementById("gate-pw");
+    function go() {
+      var v = pw.value.trim();
+      if (v === PW_EDITOR) role = "editor";
+      else if (v === PW_MEMBER) role = "member";
+      else { document.getElementById("gate-err").style.display = "block"; return; }
+      try { sessionStorage.setItem("oxolo-authed", "1"); sessionStorage.setItem("oxolo-role", role); } catch (e) {}
+      document.getElementById("gate").style.display = "none";
+      load();
+    }
+    document.getElementById("gate-go").onclick = go;
+    pw.onkeydown = function (e) { if (e.key === "Enter") go(); };
+    pw.focus();
+  }
+
+  // ---- week math (weeks start Monday) ----
+  function monday(d) { var x = new Date(d.getFullYear(), d.getMonth(), d.getDate()); x.setDate(x.getDate() - ((x.getDay() + 6) % 7)); return x; }
+  function isoWeek(d) {
+    var x = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+    x.setUTCDate(x.getUTCDate() + 4 - (x.getUTCDay() || 7));
+    var y = x.getUTCFullYear();
+    return { y: y, w: Math.ceil((((x - Date.UTC(y, 0, 1)) / 86400000) + 1) / 7) };
+  }
+  function weekOf(off) {
+    var m = monday(new Date()); m.setDate(m.getDate() + off * 7);
+    var end = new Date(m); end.setDate(end.getDate() + 7);
+    var iw = isoWeek(m);
+    var lastD = new Date(m); lastD.setDate(lastD.getDate() + 6);
+    var label = m.getDate() + (m.getMonth() === lastD.getMonth() ? "" : " " + MONTH[m.getMonth()]) + " – " + lastD.getDate() + " " + MONTH[lastD.getMonth()] + " " + lastD.getFullYear();
+    return { s: m.getTime(), e: end.getTime(), iso: iw.y + "-W" + (iw.w < 10 ? "0" : "") + iw.w, wn: iw.w, label: label };
+  }
+  function cap(s) { return s ? String(s).replace(/(^\s*|[.!?]\s+)([a-zа-яё])/g, function (m, p, c) { return p + c.toUpperCase(); }) : s; }
+  function cyc(ms) { if (ms == null) return "—"; var d = ms / 86400000; return d < 1 ? "<1 day" : (Math.round(d * 10) / 10) + " days"; }
+
+  function fetchAll() {
+    var h = { headers: { apikey: KEY, Authorization: "Bearer " + KEY } };
+    return Promise.all([
+      fetch(SUPA + "/rest/v1/oxolo_tasks?select=*", h).then(function (r) { return r.json(); }),
+      fetch(SUPA + "/rest/v1/oxolo_roadmap?select=*&id=not.like.im_*", h).then(function (r) { return r.json(); }),
+    ]).then(function (res) {
+      var tasks = res[0] || [], rows = res[1] || [];
+      var ts = {}, sz = {}, ti = {}, weeks = {}, pg = {}, rm = [];
+      rows.forEach(function (r) {
+        var id = String(r.id);
+        if (id.indexOf("ts_") === 0) { try { ts[id.slice(3)] = JSON.parse(r.title || "{}"); } catch (e) {} }
+        else if (id.indexOf("pg_") === 0) pg[id.slice(3)] = r.rm_start;
+        else if (id.indexOf("sz_") === 0) sz[id.slice(3)] = r.p;
+        else if (id.indexOf("ti_") === 0) ti[id.slice(3)] = r.title;
+        else if (id.indexOf("wk_") === 0) { try { weeks[id.slice(3)] = JSON.parse(r.title || "{}"); } catch (e) {} }
+        else if (SIDE.some(function (p) { return id.indexOf(p) === 0 && p !== "rt_"; })) { /* other sidecars unused here */ }
+        else rm.push(r);
+      });
+      tasks = tasks.map(function (t) {
+        var x = ts[t.id] || {};
+        return { id: t.id, title: cap(t.title), p: t.p, status: t.status, platform: t.platform || "web", author: t.author || "", size: [1,2,3].indexOf(sz[t.id]) >= 0 ? sz[t.id] : 2, prog: Math.min(Math.max(pg[t.id] || 0, 0), 100), c: x.c || null, s: x.s || null, d: x.d || null, init: ti[t.id] || (rm.some(function (r) { return r.id === "rt_" + t.id; }) ? "rt_" + t.id : null) };
+      });
+      DATA = { tasks: tasks, rm: rm, weeks: weeks };
+    });
+  }
+
+  function statsFor(win) {
+    var T = DATA.tasks;
+    var shipped = T.filter(function (t) { return t.status === "done" && t.d && t.d >= win.s && t.d < win.e; });
+    var started = T.filter(function (t) { return t.s && t.s >= win.s && t.s < win.e; });
+    var created = T.filter(function (t) { return t.c && t.c >= win.s && t.c < win.e; });
+    var cycled = shipped.filter(function (t) { return t.s && t.d > t.s; });
+    var cycleMs = cycled.length ? cycled.reduce(function (a, t) { return a + (t.d - t.s); }, 0) / cycled.length : null;
+    var pts = shipped.reduce(function (a, t) { return a + t.size; }, 0);
+    return { shipped: shipped, started: started.length, created: created.length, pts: pts, cycleMs: cycleMs,
+             web: shipped.filter(function (t) { return t.platform === "web"; }).length,
+             mobile: shipped.filter(function (t) { return t.platform === "mobile"; }).length };
+  }
+
+  function render() {
+    var win = weekOf(offset);
+    var st = statsFor(win);
+    var me = "";
+    try { me = localStorage.getItem("oxolo-name") || ""; } catch (e) {}
+
+    var h = "";
+    h += '<div class="rhead"><div><h1>Design Weekly Report</h1><div class="sub">Week ' + win.wn + " &middot; " + win.label + (me ? " &middot; Prepared by " + me : "") + '</div></div><div class="mark"><span class="dot"></span>Oxolo Design</div></div>';
+
+    // KPIs
+    h += "<h2>Summary</h2><div class='kpis'>";
+    h += '<div class="kpi"><div class="v">' + st.shipped.length + '</div><div class="l">tasks shipped</div></div>';
+    h += '<div class="kpi"><div class="v">' + st.pts + '</div><div class="l">effort points delivered</div></div>';
+    h += '<div class="kpi"><div class="v">' + cyc(st.cycleMs) + '</div><div class="l">avg cycle time</div></div>';
+    h += '<div class="kpi"><div class="v">' + st.web + " / " + st.mobile + '</div><div class="l">web / mobile shipped</div></div>';
+    h += "</div>";
+
+    // shipped list
+    h += "<h2>Shipped this week</h2>";
+    var snap = DATA.weeks[win.iso];
+    var listRows = st.shipped.map(function (t) {
+      return "<tr><td>" + t.title + (t.p <= 1 ? '<span class="tag p' + t.p + '">P' + t.p + "</span>" : "") + "</td><td class='num'>" + (t.platform === "mobile" ? "Mobile" : "Web") + "</td><td class='num'>" + ["", "S", "M", "L"][t.size] + "</td><td class='num'>" + (t.author || "—") + "</td></tr>";
+    });
+    if (!listRows.length && snap && snap.titles && snap.titles.length) {
+      listRows = snap.titles.map(function (x) { return "<tr><td>" + x + "</td><td class='num'></td><td class='num'></td><td class='num'></td></tr>"; });
+    }
+    h += listRows.length
+      ? "<table><tr><th>Task</th><th class='num'>Platform</th><th class='num'>Effort</th><th class='num'>Owner</th></tr>" + listRows.join("") + "</table>"
+      : '<div class="empty">Nothing shipped in this window.</div>';
+
+    // initiatives
+    var inits = DATA.rm.filter(function (r) { return !SIDE.some(function (p) { return String(r.id).indexOf(p) === 0; }); });
+    if (inits.length) {
+      h += "<h2>Initiative progress</h2>";
+      inits.sort(function (a, b) { return (a.p === 0 ? 0 : 1) - (b.p === 0 ? 0 : 1); }).forEach(function (r) {
+        var rT = DATA.tasks.filter(function (t) { return t.init === r.id || r.id === "rt_" + t.id; });
+        var done = rT.filter(function (t) { return t.status === "done"; }).length;
+        var pc = rT.length ? Math.round((done / rT.length) * 100) : 0;
+        var wkDone = rT.filter(function (t) { return t.status === "done" && t.d && t.d >= win.s && t.d < win.e; }).length;
+        h += '<div class="bar-row"><div class="t">' + cap(r.title) + (r.p === 0 ? '<span class="tag p0">P0</span>' : "") + '</div><div class="track"><div class="fill' + (r.p === 0 ? " hot" : "") + '" style="width:' + pc + '%"></div></div><div class="pc">' + (rT.length ? done + "/" + rT.length + (wkDone ? " &middot; +" + wkDone : "") : "—") + "</div></div>";
+      });
+    }
+
+    // in review + next focus
+    var review = DATA.tasks.filter(function (t) { return t.status === "review"; });
+    h += "<h2>Awaiting review</h2>";
+    h += review.length
+      ? "<table>" + review.map(function (t) { return "<tr><td>" + t.title + "</td><td class='num'>" + (t.platform === "mobile" ? "Mobile" : "Web") + "</td><td class='num'>" + (t.author || "—") + "</td></tr>"; }).join("") + "</table>"
+      : '<div class="empty">Review queue is empty.</div>';
+
+    var next = DATA.tasks.filter(function (t) { return t.status !== "done"; }).sort(function (a, b) { return a.p - b.p; }).slice(0, 6);
+    h += "<h2>Focus for next week</h2>";
+    h += next.length
+      ? "<table>" + next.map(function (t) { return "<tr><td>" + t.title + '<span class="tag' + (t.p <= 1 ? " p" + t.p : "") + '">P' + t.p + "</span></td><td class='num'>" + (COLS[t.status] || t.status) + (t.prog > 0 ? " &middot; " + t.prog + "%" : "") + "</td><td class='num'>" + (t.platform === "mobile" ? "Mobile" : "Web") + "</td></tr>"; }).join("") + "</table>"
+      : '<div class="empty">Backlog is empty.</div>';
+
+    h += '<div class="foot"><span>Generated from the live design board</span><span>' + new Date().toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" }) + "</span></div>";
+
+    document.getElementById("sheet").innerHTML = h;
+    document.getElementById("wk-next").disabled = offset >= 0;
+    document.title = "Design Weekly Report — W" + win.wn;
+
+    // archive a snapshot of the viewed week so history survives task deletion (editor only)
+    if (role === "editor" && offset <= 0) {
+      var digest = { shipped: st.shipped.length, pts: st.pts, created: st.created, started: st.started, cycleMs: st.cycleMs, titles: st.shipped.slice(0, 14).map(function (t) { return t.title; }) };
+      var cur = DATA.weeks[win.iso];
+      if (!cur || JSON.stringify(cur) !== JSON.stringify(digest)) {
+        if ((digest.shipped || digest.created || digest.started) || cur) {
+          DATA.weeks[win.iso] = digest;
+          fetch(SUPA + "/rest/v1/oxolo_roadmap", { method: "POST", headers: { apikey: KEY, Authorization: "Bearer " + KEY, "Content-Type": "application/json", Prefer: "resolution=merge-duplicates,return=minimal" }, body: JSON.stringify({ id: "wk_" + win.iso, title: JSON.stringify(digest), rm_start: 0, rm_end: 0, p: 3 }) }).catch(function () {});
+        }
+      }
+    }
+  }
+
+  function load() { fetchAll().then(render).catch(function () { document.getElementById("sheet").innerHTML = '<div class="empty">Could not load data. Check the connection and reload.</div>'; }); }
+
+  document.getElementById("wk-prev").onclick = function () { offset--; render(); };
+  document.getElementById("wk-next").onclick = function () { if (offset < 0) { offset++; render(); } };
+  document.getElementById("pdf").onclick = function () { window.print(); };
+
+  if (role) load(); else gate();
+})();
+</script>
+</body>
+</html>
